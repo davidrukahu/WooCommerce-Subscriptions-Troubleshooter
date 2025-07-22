@@ -31,23 +31,52 @@ define('WCST_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WCST_PLUGIN_VERSION', '1.0.0');
 define('WCST_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-// Check if WooCommerce is active
-if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    add_action('admin_notices', function() {
-        echo '<div class="notice notice-error"><p>' . 
-             __('WooCommerce Subscriptions Troubleshooter requires WooCommerce to be installed and activated.', 'wc-subscriptions-troubleshooter') . 
-             '</p></div>';
-    });
-    return;
+// Function to check dependencies
+function wcst_check_dependencies() {
+    $errors = array();
+    
+    // Check if WooCommerce is active
+    if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        $errors[] = __('WooCommerce Subscriptions Troubleshooter requires WooCommerce to be installed and activated.', 'wc-subscriptions-troubleshooter');
+    }
+    
+    // Check if WooCommerce Subscriptions is active
+    $subscriptions_active = false;
+    
+    // Method 1: Check if the plugin file is active
+    if (in_array('woocommerce-subscriptions/woocommerce-subscriptions.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        $subscriptions_active = true;
+    }
+    
+    // Method 2: Check if the class exists (backup method)
+    if (!$subscriptions_active && class_exists('WC_Subscriptions')) {
+        $subscriptions_active = true;
+    }
+    
+    // Method 3: Check if the function exists (another backup method)
+    if (!$subscriptions_active && function_exists('wcs_get_subscription')) {
+        $subscriptions_active = true;
+    }
+    
+    if (!$subscriptions_active) {
+        $errors[] = __('WooCommerce Subscriptions Troubleshooter requires WooCommerce Subscriptions to be installed and activated.', 'wc-subscriptions-troubleshooter');
+    }
+    
+    return $errors;
 }
 
-// Check if WooCommerce Subscriptions is active
-if (!class_exists('WC_Subscriptions')) {
-    add_action('admin_notices', function() {
-        echo '<div class="notice notice-error"><p>' . 
-             __('WooCommerce Subscriptions Troubleshooter requires WooCommerce Subscriptions to be installed and activated.', 'wc-subscriptions-troubleshooter') . 
-             '</p></div>';
-    });
+// Check dependencies and show notices if needed
+add_action('admin_notices', function() {
+    $errors = wcst_check_dependencies();
+    if (!empty($errors)) {
+        foreach ($errors as $error) {
+            echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
+        }
+    }
+});
+
+// Only proceed if dependencies are met
+if (!empty(wcst_check_dependencies())) {
     return;
 }
 
@@ -70,9 +99,12 @@ spl_autoload_register(function ($class) {
 
 // Initialize plugin
 add_action('plugins_loaded', function() {
-    // Initialize main plugin class
-    new WCST_Plugin();
-});
+    // Double-check dependencies before initializing
+    if (empty(wcst_check_dependencies())) {
+        // Initialize main plugin class
+        new WCST_Plugin();
+    }
+}, 20); // Higher priority to ensure WooCommerce and Subscriptions are loaded first
 
 // Activation hook
 register_activation_hook(__FILE__, function() {
