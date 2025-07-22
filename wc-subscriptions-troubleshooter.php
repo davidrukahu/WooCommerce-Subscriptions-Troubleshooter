@@ -91,29 +91,42 @@ spl_autoload_register(function ($class) {
     $class_file = str_replace('_', '-', strtolower($class));
     $class_file = str_replace('wcst-', '', $class_file);
     
+    // Special handling for specific class names that don't follow the standard pattern
+    $class_file_mappings = array(
+        'subscription-data-collector' => 'subscription-data',
+        'subscription-anatomy' => 'subscription-anatomy',
+        'expected-behavior' => 'expected-behavior',
+        'timeline-builder' => 'timeline-builder',
+        'discrepancy-detector' => 'discrepancy-detector',
+        'report-exporter' => 'report-exporter'
+    );
+    
+    // Use mapping if available, otherwise use the converted name
+    $file_name = isset($class_file_mappings[$class_file]) ? $class_file_mappings[$class_file] : $class_file;
+    
     // Check main includes directory first
-    $file_path = WCST_PLUGIN_DIR . 'includes/class-' . $class_file . '.php';
+    $file_path = WCST_PLUGIN_DIR . 'includes/class-' . $file_name . '.php';
     if (file_exists($file_path)) {
         require_once $file_path;
         return;
     }
     
     // Check utilities directory
-    $utilities_file_path = WCST_PLUGIN_DIR . 'includes/utilities/class-' . $class_file . '.php';
+    $utilities_file_path = WCST_PLUGIN_DIR . 'includes/utilities/class-' . $file_name . '.php';
     if (file_exists($utilities_file_path)) {
         require_once $utilities_file_path;
         return;
     }
     
     // Check analyzers directory
-    $analyzers_file_path = WCST_PLUGIN_DIR . 'includes/analyzers/class-' . $class_file . '.php';
+    $analyzers_file_path = WCST_PLUGIN_DIR . 'includes/analyzers/class-' . $file_name . '.php';
     if (file_exists($analyzers_file_path)) {
         require_once $analyzers_file_path;
         return;
     }
     
     // Check collectors directory
-    $collectors_file_path = WCST_PLUGIN_DIR . 'includes/collectors/class-' . $class_file . '.php';
+    $collectors_file_path = WCST_PLUGIN_DIR . 'includes/collectors/class-' . $file_name . '.php';
     if (file_exists($collectors_file_path)) {
         require_once $collectors_file_path;
         return;
