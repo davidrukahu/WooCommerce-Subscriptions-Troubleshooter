@@ -90,18 +90,33 @@ spl_autoload_register(function ($class) {
     // Convert class name to file path
     $class_file = str_replace('_', '-', strtolower($class));
     $class_file = str_replace('wcst-', '', $class_file);
+    
+    // Check main includes directory first
     $file_path = WCST_PLUGIN_DIR . 'includes/class-' . $class_file . '.php';
-
     if (file_exists($file_path)) {
         require_once $file_path;
+        return;
     }
     
-    // Special handling for security class in utilities directory
-    if ($class === 'WCST_Security') {
-        $security_file = WCST_PLUGIN_DIR . 'includes/utilities/class-security.php';
-        if (file_exists($security_file)) {
-            require_once $security_file;
-        }
+    // Check utilities directory
+    $utilities_file_path = WCST_PLUGIN_DIR . 'includes/utilities/class-' . $class_file . '.php';
+    if (file_exists($utilities_file_path)) {
+        require_once $utilities_file_path;
+        return;
+    }
+    
+    // Check analyzers directory
+    $analyzers_file_path = WCST_PLUGIN_DIR . 'includes/analyzers/class-' . $class_file . '.php';
+    if (file_exists($analyzers_file_path)) {
+        require_once $analyzers_file_path;
+        return;
+    }
+    
+    // Check collectors directory
+    $collectors_file_path = WCST_PLUGIN_DIR . 'includes/collectors/class-' . $class_file . '.php';
+    if (file_exists($collectors_file_path)) {
+        require_once $collectors_file_path;
+        return;
     }
 });
 
