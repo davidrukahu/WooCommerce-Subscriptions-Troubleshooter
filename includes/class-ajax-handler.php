@@ -34,16 +34,15 @@ class WCST_Ajax_Handler {
      * Analyze subscription
      */
     public function analyze_subscription() {
-        $this->verify_nonce();
-        $this->check_permissions();
-        
-        $subscription_id = sanitize_text_field($_POST['subscription_id']);
-        
-        if (empty($subscription_id)) {
-            wp_send_json_error(__('Subscription ID is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('analyze_subscription');
+            
+            // Validate and sanitize input
+            $subscription_id = WCST_Security::validate_subscription_id($_POST['subscription_id']);
+            
             // Initialize analyzers
             $anatomy_analyzer = new WCST_Subscription_Anatomy();
             $expected_analyzer = new WCST_Expected_Behavior();
@@ -62,14 +61,15 @@ class WCST_Ajax_Handler {
             // Step 4: Detect discrepancies
             $discrepancies = $discrepancy_detector->analyze_discrepancies($subscription_id);
             
+            // Escape output data
             $response = array(
                 'success' => true,
-                'data' => array(
+                'data' => WCST_Security::escape_html(array(
                     'anatomy' => $anatomy_data,
                     'expected' => $expected_data,
                     'timeline' => $timeline_data,
                     'discrepancies' => $discrepancies
-                )
+                ))
             );
             
             wp_send_json($response);
@@ -83,20 +83,20 @@ class WCST_Ajax_Handler {
      * Get subscription data for search
      */
     public function get_subscription_data() {
-        $this->verify_nonce();
-        $this->check_permissions();
-        
-        $search_term = sanitize_text_field($_POST['search_term']);
-        
-        if (empty($search_term)) {
-            wp_send_json_error(__('Search term is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('search_subscriptions');
+            
+            // Validate and sanitize input
+            $search_term = WCST_Security::validate_search_term($_POST['search_term']);
+            
             $subscription_collector = new WCST_Subscription_Data_Collector();
             $results = $subscription_collector->search_subscriptions($search_term);
             
-            wp_send_json_success($results);
+            // Escape output data
+            wp_send_json_success(WCST_Security::escape_html($results));
             
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
@@ -107,21 +107,21 @@ class WCST_Ajax_Handler {
      * Get timeline events
      */
     public function get_timeline_events() {
-        $this->verify_nonce();
-        $this->check_permissions();
-        
-        $subscription_id = sanitize_text_field($_POST['subscription_id']);
-        $filters = isset($_POST['filters']) ? $_POST['filters'] : array();
-        
-        if (empty($subscription_id)) {
-            wp_send_json_error(__('Subscription ID is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('get_timeline_events');
+            
+            // Validate and sanitize input
+            $subscription_id = WCST_Security::validate_subscription_id($_POST['subscription_id']);
+            $filters = WCST_Security::validate_filters($_POST['filters'] ?? array());
+            
             $timeline_builder = new WCST_Timeline_Builder();
             $events = $timeline_builder->get_filtered_events($subscription_id, $filters);
             
-            wp_send_json_success($events);
+            // Escape output data
+            wp_send_json_success(WCST_Security::escape_html($events));
             
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
@@ -132,21 +132,21 @@ class WCST_Ajax_Handler {
      * Filter timeline
      */
     public function filter_timeline() {
-        $this->verify_nonce();
-        $this->check_permissions();
-        
-        $subscription_id = sanitize_text_field($_POST['subscription_id']);
-        $filters = isset($_POST['filters']) ? $_POST['filters'] : array();
-        
-        if (empty($subscription_id)) {
-            wp_send_json_error(__('Subscription ID is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('filter_timeline');
+            
+            // Validate and sanitize input
+            $subscription_id = WCST_Security::validate_subscription_id($_POST['subscription_id']);
+            $filters = WCST_Security::validate_filters($_POST['filters'] ?? array());
+            
             $timeline_builder = new WCST_Timeline_Builder();
             $filtered_events = $timeline_builder->apply_filters($subscription_id, $filters);
             
-            wp_send_json_success($filtered_events);
+            // Escape output data
+            wp_send_json_success(WCST_Security::escape_html($filtered_events));
             
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
@@ -157,21 +157,21 @@ class WCST_Ajax_Handler {
      * Export report
      */
     public function export_report() {
-        $this->verify_nonce();
-        $this->check_permissions();
-        
-        $subscription_id = sanitize_text_field($_POST['subscription_id']);
-        $format = sanitize_text_field($_POST['format']); // 'pdf', 'csv', 'html'
-        
-        if (empty($subscription_id)) {
-            wp_send_json_error(__('Subscription ID is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('export_report');
+            
+            // Validate and sanitize input
+            $subscription_id = WCST_Security::validate_subscription_id($_POST['subscription_id']);
+            $format = WCST_Security::validate_export_format($_POST['format']);
+            
             $exporter = new WCST_Report_Exporter();
             $report_data = $exporter->generate_report($subscription_id, $format);
             
-            wp_send_json_success($report_data);
+            // Escape output data
+            wp_send_json_success(WCST_Security::escape_html($report_data));
             
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
@@ -182,14 +182,18 @@ class WCST_Ajax_Handler {
      * Save settings
      */
     public function save_settings() {
-        $this->verify_nonce();
-        $this->check_permissions();
-        
-        $settings = isset($_POST['settings']) ? $_POST['settings'] : array();
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('save_settings');
+            
+            // Validate and sanitize input
+            $settings = WCST_Security::validate_settings($_POST['settings'] ?? array());
+            
+            // Save validated settings
             foreach ($settings as $key => $value) {
-                WCST_Plugin::update_option($key, sanitize_text_field($value));
+                WCST_Plugin::update_option($key, $value);
             }
             
             wp_send_json_success(__('Settings saved successfully.', 'wc-subscriptions-troubleshooter'));
@@ -199,21 +203,5 @@ class WCST_Ajax_Handler {
         }
     }
     
-    /**
-     * Verify nonce
-     */
-    private function verify_nonce() {
-        if (!wp_verify_nonce($_POST['nonce'], 'wcst_nonce')) {
-            wp_die(__('Security check failed.', 'wc-subscriptions-troubleshooter'));
-        }
-    }
-    
-    /**
-     * Check user permissions
-     */
-    private function check_permissions() {
-        if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('You do not have permission to perform this action.', 'wc-subscriptions-troubleshooter'));
-        }
-    }
+
 } 

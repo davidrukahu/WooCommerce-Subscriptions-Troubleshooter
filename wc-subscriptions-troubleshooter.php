@@ -95,6 +95,14 @@ spl_autoload_register(function ($class) {
     if (file_exists($file_path)) {
         require_once $file_path;
     }
+    
+    // Special handling for security class in utilities directory
+    if ($class === 'WCST_Security') {
+        $security_file = WCST_PLUGIN_DIR . 'includes/utilities/class-security.php';
+        if (file_exists($security_file)) {
+            require_once $security_file;
+        }
+    }
 });
 
 // Initialize plugin

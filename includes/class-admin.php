@@ -172,19 +172,15 @@ class WCST_Admin {
      * AJAX handler for subscription analysis
      */
     public function ajax_analyze_subscription() {
-        check_ajax_referer('wcst_nonce', 'nonce');
-        
-        if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('You do not have permission to perform this action.', 'wc-subscriptions-troubleshooter'));
-        }
-        
-        $subscription_id = sanitize_text_field($_POST['subscription_id']);
-        
-        if (empty($subscription_id)) {
-            wp_send_json_error(__('Subscription ID is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('analyze_subscription');
+            
+            // Validate and sanitize input
+            $subscription_id = WCST_Security::validate_subscription_id($_POST['subscription_id']);
+            
             // Initialize analyzers
             $anatomy_analyzer = new WCST_Subscription_Anatomy();
             $expected_analyzer = new WCST_Expected_Behavior();
@@ -203,14 +199,15 @@ class WCST_Admin {
             // Step 4: Detect discrepancies
             $discrepancies = $discrepancy_detector->analyze_discrepancies($subscription_id);
             
+            // Escape output data
             $response = array(
                 'success' => true,
-                'data' => array(
+                'data' => WCST_Security::escape_html(array(
                     'anatomy' => $anatomy_data,
                     'expected' => $expected_data,
                     'timeline' => $timeline_data,
                     'discrepancies' => $discrepancies
-                )
+                ))
             );
             
             wp_send_json($response);
@@ -224,23 +221,20 @@ class WCST_Admin {
      * AJAX handler for getting subscription data
      */
     public function ajax_get_subscription_data() {
-        check_ajax_referer('wcst_nonce', 'nonce');
-        
-        if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('You do not have permission to perform this action.', 'wc-subscriptions-troubleshooter'));
-        }
-        
-        $search_term = sanitize_text_field($_POST['search_term']);
-        
-        if (empty($search_term)) {
-            wp_send_json_error(__('Search term is required.', 'wc-subscriptions-troubleshooter'));
-        }
-        
         try {
+            // Security checks
+            WCST_Security::verify_nonce($_POST['nonce'], 'wcst_nonce');
+            WCST_Security::check_permissions('manage_woocommerce');
+            WCST_Security::check_rate_limit('search_subscriptions');
+            
+            // Validate and sanitize input
+            $search_term = WCST_Security::validate_search_term($_POST['search_term']);
+            
             $subscription_collector = new WCST_Subscription_Data_Collector();
             $results = $subscription_collector->search_subscriptions($search_term);
             
-            wp_send_json_success($results);
+            // Escape output data
+            wp_send_json_success(WCST_Security::escape_html($results));
             
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
