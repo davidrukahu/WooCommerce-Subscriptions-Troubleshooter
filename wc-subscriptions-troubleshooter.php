@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WooCommerce Subscriptions Troubleshooter
- * Plugin URI: https://github.com/your-username/wc-subscriptions-troubleshooter
+ * Plugin URI: https://github.com/davidrukahu/WooCommerce-Subscriptions-Troubleshooter
  * Description: A comprehensive troubleshooting tool for WooCommerce Subscriptions that guides users through a 3-step diagnostic process.
  * Version: 1.0.0
- * Author: Your Name
- * Author URI: https://yourwebsite.com
+ * Author: DavidR
+ * Author URI: https://github.com/davidrukahu/WooCommerce-Subscriptions-Troubleshooter
  * Text Domain: wc-subscriptions-troubleshooter
  * Domain Path: /languages
  * Requires at least: 5.0
