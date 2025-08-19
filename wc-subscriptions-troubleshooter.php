@@ -1,0 +1,169 @@
+<?php
+declare( strict_types=1 );
+/**
+ * Plugin Name: WooCommerce Subscriptions Troubleshooter
+ * Plugin URI: https://github.com/davidrukahu/WooCommerce-Subscriptions-Troubleshooter
+ * Description: An intuitive troubleshooting tool that implements the official WooCommerce Subscriptions troubleshooting framework with a simple 3-step diagnostic process.
+ * Version: 2.0.0
+ * Author: DavidR
+ * Author URI: https://github.com/davidrukahu/WooCommerce-Subscriptions-Troubleshooter
+ * Text Domain: wc-subscriptions-troubleshooter
+ * Domain Path: /languages
+ * Requires at least: 5.0
+ * Tested up to: 6.4
+ * Requires PHP: 7.4
+ * WC requires at least: 9.8.5
+ * WC tested up to: 9.9.5
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @package WC_Subscriptions_Troubleshooter
+ */
+
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+// Define plugin constants.
+define( 'WCST_PLUGIN_FILE', __FILE__ );
+define( 'WCST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WCST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'WCST_PLUGIN_VERSION', '2.0.0' );
+define( 'WCST_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
+/**
+ * Check plugin dependencies.
+ *
+ * @since 2.0.0
+ * @return array List of error messages if dependencies are not met.
+ */
+function wcst_check_dependencies() {
+    $errors = array();
+    
+    // Check if WooCommerce is active.
+    if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
+        $errors[] = __( 'WooCommerce Subscriptions Troubleshooter requires WooCommerce to be installed and activated.', 'wc-subscriptions-troubleshooter' );
+    }
+    
+    // Check if WooCommerce Subscriptions is active using multiple methods.
+    $subscriptions_active = false;
+    
+    // Method 1: Check if the plugin file is active.
+    if ( in_array( 'woocommerce-subscriptions/woocommerce-subscriptions.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
+        $subscriptions_active = true;
+    }
+    
+    // Method 2: Check if the main plugin class exists.
+    if ( ! $subscriptions_active && class_exists( 'WC_Subscriptions_Plugin' ) ) {
+        $subscriptions_active = true;
+    }
+    
+    // Method 3: Check if core function exists.
+    if ( ! $subscriptions_active && function_exists( 'wcs_get_subscription' ) ) {
+        $subscriptions_active = true;
+    }
+    
+    // Method 4: Check if WC_Subscription class exists.
+    if ( ! $subscriptions_active && class_exists( 'WC_Subscription' ) ) {
+        $subscriptions_active = true;
+    }
+    
+    if ( ! $subscriptions_active ) {
+        $errors[] = __( 'WooCommerce Subscriptions Troubleshooter requires WooCommerce Subscriptions to be installed and activated.', 'wc-subscriptions-troubleshooter' );
+    }
+    
+    return $errors;
+}
+
+/**
+ * Display admin notices for dependency issues.
+ *
+ * @since 2.0.0
+ */
+function wcst_admin_notices() {
+    $errors = wcst_check_dependencies();
+    if ( ! empty( $errors ) ) {
+        foreach ( $errors as $error ) {
+            echo '<div class="notice notice-error"><p>' . esc_html( $error ) . '</p></div>';
+        }
+    }
+}
+add_action( 'admin_notices', 'wcst_admin_notices' );
+
+// Only proceed if dependencies are met.
+if ( ! empty( wcst_check_dependencies() ) ) {
+    return;
+}
+
+/**
+ * Plugin autoloader.
+ *
+ * @since 2.0.0
+ * @param string $class Class name to load.
+ */
+function wcst_autoloader( $class ) {
+    // Only handle our plugin classes.
+    if ( 0 !== strpos( $class, 'WCST_' ) ) {
+        return;
+    }
+
+    // Convert class name to file path.
+    $class_file = str_replace( '_', '-', strtolower( $class ) );
+    $class_file = str_replace( 'wcst-', '', $class_file );
+    
+    // Define class file mappings.
+    $class_directories = array(
+        'plugin'              => 'includes/',
+        'admin'               => 'includes/',
+        'ajax-handler'        => 'includes/',
+        'subscription-anatomy' => 'includes/analyzers/',
+        'expected-behavior'   => 'includes/analyzers/',
+        'timeline-builder'    => 'includes/analyzers/',
+        'subscription-data'   => 'includes/collectors/',
+        'logger'              => 'includes/utilities/',
+        'security'            => 'includes/utilities/',
+        'report-exporter'     => 'includes/utilities/',
+    );
+    
+    $directory = isset( $class_directories[ $class_file ] ) ? $class_directories[ $class_file ] : 'includes/';
+    $file_path = WCST_PLUGIN_DIR . $directory . 'class-' . $class_file . '.php';
+    
+    if ( file_exists( $file_path ) ) {
+        require_once $file_path;
+    }
+}
+spl_autoload_register( 'wcst_autoloader' );
+
+/**
+ * Initialize the plugin.
+ *
+ * @since 2.0.0
+ */
+function wcst_init_plugin() {
+    // Double-check dependencies before initializing.
+    if ( empty( wcst_check_dependencies() ) ) {
+        new WCST_Plugin();
+    }
+}
+add_action( 'plugins_loaded', 'wcst_init_plugin', 20 );
+
+/**
+ * Plugin activation hook.
+ *
+ * @since 2.0.0
+ */
+function wcst_activate_plugin() {
+    WCST_Plugin::activate();
+}
+register_activation_hook( __FILE__, 'wcst_activate_plugin' );
+
+/**
+ * Plugin deactivation hook.
+ *
+ * @since 2.0.0
+ */
+function wcst_deactivate_plugin() {
+    WCST_Plugin::deactivate();
+}
+register_deactivation_hook( __FILE__, 'wcst_deactivate_plugin' );
