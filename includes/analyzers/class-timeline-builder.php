@@ -82,7 +82,9 @@ class WCST_Timeline_Builder {
         
         // Sort events chronologically.
         usort( $events, function( $a, $b ) {
-            return strcmp( $a['timestamp'], $b['timestamp'] );
+            $timestamp_a = $this->safe_format_date( $a['timestamp'] );
+            $timestamp_b = $this->safe_format_date( $b['timestamp'] );
+            return strcmp( $timestamp_a, $timestamp_b );
         } );
         
         // Analyze timeline for discrepancies.
