@@ -405,7 +405,8 @@ class WCST_Report_Exporter {
             return $date;
         }
         
-        if ( $date instanceof DateTime ) {
+        // Handle both DateTime/WC_DateTime objects (HPOS compatibility)
+        if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
             return $date->format( 'Y-m-d H:i:s' );
         }
         

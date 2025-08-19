@@ -18,6 +18,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCST_Subscription_Data {
     
     /**
+     * Safely format a date that might be a DateTime object or string (HPOS compatibility).
+     *
+     * @since 2.0.0
+     * @param mixed $date Date object or string.
+     * @return string Formatted date or null.
+     */
+    private function safe_format_date( $date ) {
+        if ( empty( $date ) ) {
+            return null;
+        }
+        
+        if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
+            return $date->format( 'Y-m-d H:i:s' );
+        }
+        
+        if ( is_string( $date ) ) {
+            return $date;
+        }
+        
+        return null;
+    }
+    
+    /**
      * Search for subscriptions.
      *
      * @since 2.0.0
@@ -46,7 +69,7 @@ class WCST_Subscription_Data {
                     'customer' => $subscription->get_formatted_billing_full_name(),
                     'email'    => $subscription->get_billing_email(),
                     'total'    => $subscription->get_formatted_order_total(),
-                    'next_payment' => $subscription->get_date( 'next_payment' ),
+                    'next_payment' => $this->safe_format_date( $subscription->get_date( 'next_payment' ) ),
                 );
             }
         }
@@ -113,7 +136,7 @@ class WCST_Subscription_Data {
                     'customer' => $subscription->get_formatted_billing_full_name(),
                     'email'    => $subscription->get_billing_email(),
                     'total'    => $subscription->get_formatted_order_total(),
-                    'next_payment' => $subscription->get_date( 'next_payment' ),
+                    'next_payment' => $this->safe_format_date( $subscription->get_date( 'next_payment' ) ),
                 );
             }
         }
@@ -142,14 +165,14 @@ class WCST_Subscription_Data {
         return array(
             'id'            => $subscription->get_id(),
             'status'        => $subscription->get_status(),
-            'date_created'  => $subscription->get_date( 'date_created' ),
+            'date_created'  => $this->safe_format_date( $subscription->get_date( 'date_created' ) ),
             'customer_id'   => $subscription->get_customer_id(),
             'customer_name' => $subscription->get_formatted_billing_full_name(),
             'customer_email' => $subscription->get_billing_email(),
             'total'         => $subscription->get_total(),
             'currency'      => $subscription->get_currency(),
             'payment_method' => $subscription->get_payment_method(),
-            'next_payment'  => $subscription->get_date( 'next_payment' ),
+            'next_payment'  => $this->safe_format_date( $subscription->get_date( 'next_payment' ) ),
         );
     }
 }

@@ -12,6 +12,29 @@ if (!defined('ABSPATH')) {
 class WCST_Discrepancy_Detector {
     
     /**
+     * Safely get timestamp from date that might be a DateTime object or string (HPOS compatibility).
+     *
+     * @since 2.0.0
+     * @param mixed $date Date object or string.
+     * @return int|false Timestamp or false on failure.
+     */
+    private function safe_get_timestamp( $date ) {
+        if ( empty( $date ) ) {
+            return false;
+        }
+        
+        if ( is_object( $date ) && method_exists( $date, 'getTimestamp' ) ) {
+            return $date->getTimestamp();
+        }
+        
+        if ( is_string( $date ) ) {
+            return strtotime( $date );
+        }
+        
+        return false;
+    }
+    
+    /**
      * Analyze discrepancies
      */
     public function analyze_discrepancies($subscription_id) {
@@ -58,7 +81,7 @@ class WCST_Discrepancy_Detector {
         $now = current_time('timestamp');
         
         if ($next_payment) {
-            $next_payment_timestamp = strtotime($next_payment);
+            $next_payment_timestamp = $this->safe_get_timestamp($next_payment);
             $days_until_next = ceil(($next_payment_timestamp - $now) / DAY_IN_SECONDS);
             
             // Check for overdue payments
@@ -96,7 +119,7 @@ class WCST_Discrepancy_Detector {
         // Check for irregular payment intervals
         if ($last_payment && $next_payment) {
             $expected_interval = $this->calculate_expected_interval($subscription);
-            $actual_interval = strtotime($next_payment) - strtotime($last_payment);
+            $actual_interval = $this->safe_get_timestamp($next_payment) - $this->safe_get_timestamp($last_payment);
             $interval_difference = abs($actual_interval - $expected_interval);
             
             if ($interval_difference > DAY_IN_SECONDS) {
@@ -205,7 +228,7 @@ class WCST_Discrepancy_Detector {
         // Check for stuck status
         $last_modified = $subscription->get_date('date_modified');
         if ($last_modified) {
-            $days_since_modification = (current_time('timestamp') - strtotime($last_modified)) / DAY_IN_SECONDS;
+            $days_since_modification = (current_time('timestamp') - $this->safe_get_timestamp($last_modified)) / DAY_IN_SECONDS;
             
             if ($days_since_modification > 7 && in_array($current_status, array('pending', 'on-hold'))) {
                 $discrepancies[] = array(
@@ -252,7 +275,7 @@ class WCST_Discrepancy_Detector {
         // Check for expired payment methods
         $expiry_date = $subscription->get_meta('_payment_token_expiry');
         if ($expiry_date) {
-            $expiry_timestamp = strtotime($expiry_date);
+            $expiry_timestamp = $this->safe_get_timestamp($expiry_date);
             $days_until_expiry = ceil(($expiry_timestamp - current_time('timestamp')) / DAY_IN_SECONDS);
             
             if ($days_until_expiry < 0) {

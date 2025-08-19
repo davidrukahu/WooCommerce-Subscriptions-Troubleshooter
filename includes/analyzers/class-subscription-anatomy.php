@@ -21,6 +21,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCST_Subscription_Anatomy {
     
     /**
+     * Safely format a date that might be a DateTime object or string (HPOS compatibility).
+     *
+     * @since 2.0.0
+     * @param mixed $date Date object or string.
+     * @return mixed Formatted date or original value.
+     */
+    private function safe_format_date( $date ) {
+        if ( empty( $date ) ) {
+            return $date;
+        }
+        
+        if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
+            return $date->format( 'Y-m-d H:i:s' );
+        }
+        
+        return $date;
+    }
+    
+    /**
      * Analyze subscription anatomy.
      *
      * @since 2.0.0
@@ -63,8 +82,8 @@ class WCST_Subscription_Anatomy {
         return array(
             'id'            => $subscription->get_id(),
             'status'        => $subscription->get_status(),
-            'date_created'  => $subscription->get_date( 'date_created' ),
-            'date_modified' => $subscription->get_date( 'date_modified' ),
+            'date_created'  => $this->safe_format_date( $subscription->get_date( 'date_created' ) ),
+            'date_modified' => $this->safe_format_date( $subscription->get_date( 'date_modified' ) ),
             'total'         => $subscription->get_total(),
             'currency'      => $subscription->get_currency(),
             'customer_id'   => $subscription->get_customer_id(),
@@ -119,12 +138,12 @@ class WCST_Subscription_Anatomy {
         return array(
             'period'           => $subscription->get_billing_period(),
             'interval'         => $subscription->get_billing_interval(),
-            'start_date'       => $subscription->get_date( 'start' ),
-            'trial_end'        => $subscription->get_date( 'trial_end' ),
-            'next_payment'     => $subscription->get_date( 'next_payment' ),
-            'last_payment'     => $subscription->get_date( 'last_payment' ),
-            'end_date'         => $subscription->get_date( 'end' ),
-            'cancelled_date'   => $subscription->get_date( 'cancelled' ),
+            'start_date'       => $this->safe_format_date( $subscription->get_date( 'start' ) ),
+            'trial_end'        => $this->safe_format_date( $subscription->get_date( 'trial_end' ) ),
+            'next_payment'     => $this->safe_format_date( $subscription->get_date( 'next_payment' ) ),
+            'last_payment'     => $this->safe_format_date( $subscription->get_date( 'last_payment' ) ),
+            'end_date'         => $this->safe_format_date( $subscription->get_date( 'end' ) ),
+            'cancelled_date'   => $this->safe_format_date( $subscription->get_date( 'cancelled' ) ),
             'suspension_count' => $subscription->get_suspension_count(),
             'is_editable'      => $this->is_billing_schedule_editable( $subscription ),
         );
@@ -178,7 +197,7 @@ class WCST_Subscription_Anatomy {
                 'id'     => $parent_order ? $parent_order->get_id() : 0,
                 'status' => $parent_order ? $parent_order->get_status() : '',
                 'total'  => $parent_order ? $parent_order->get_total() : 0,
-                'date'   => $parent_order ? $parent_order->get_date_created() : null,
+                'date'   => $parent_order ? $this->safe_format_date( $parent_order->get_date_created() ) : null,
             ),
             'renewal_orders'    => $this->format_order_list( $renewal_orders ),
             'resubscribe_orders' => $this->format_order_list( $resubscribe_orders ),
@@ -463,7 +482,7 @@ class WCST_Subscription_Anatomy {
                     'id'     => $order->get_id(),
                     'status' => $order->get_status(),
                     'total'  => $order->get_total(),
-                    'date'   => $order->get_date_created(),
+                    'date'   => $this->safe_format_date( $order->get_date_created() ),
                 );
             }
         }
