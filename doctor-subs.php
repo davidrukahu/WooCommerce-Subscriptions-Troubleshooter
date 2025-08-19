@@ -1,7 +1,7 @@
 <?php
 declare( strict_types=1 );
 /**
- * Plugin Name: Dr Subs - Subscription Troubleshooter
+ * Plugin Name: Doctor Subs - Subscription Troubleshooter
  * Plugin URI: https://github.com/davidrukahu/dr-subs
  * Description: An intuitive subscription troubleshooting tool that implements the official WooCommerce Subscriptions troubleshooting framework with a simple 3-step diagnostic process.
  * Version: 2.0.0

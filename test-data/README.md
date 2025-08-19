@@ -1,6 +1,6 @@
 # 🧪 Test Data Generator
 
-This folder contains tools to generate test subscription data for thoroughly testing the Dr Subs.
+This folder contains tools to generate test subscription data for thoroughly testing the Doctor Subs.
 
 ## 📁 Files
 

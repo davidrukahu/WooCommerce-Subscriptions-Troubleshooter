@@ -1,4 +1,4 @@
-# Dr Subs - Subscription Troubleshooter
+# Doctor Subs - Subscription Troubleshooter
 
 An intuitive WordPress plugin that implements the official WooCommerce Subscriptions troubleshooting framework, providing a systematic 3-step approach to diagnosing subscription issues: https://woocommerce.com/document/subscriptions/troubleshooting-framework/
 
