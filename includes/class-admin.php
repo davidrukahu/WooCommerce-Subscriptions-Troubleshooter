@@ -38,7 +38,7 @@ class WCST_Admin {
             __( 'Doctor Subs', 'dr-subs' ),
             __( 'Doctor Subs', 'dr-subs' ),
             'manage_woocommerce',
-            'dr-subs',
+            'doctor-subs',
             array( $this, 'render_admin_page' )
         );
     }
@@ -50,7 +50,7 @@ class WCST_Admin {
      * @param string $hook Current admin page hook.
      */
     public function enqueue_admin_scripts( $hook ) {
-        if ( 'woocommerce_page_dr-subs' !== $hook ) {
+        if ( 'woocommerce_page_doctor-subs' !== $hook ) {
             return;
         }
         
