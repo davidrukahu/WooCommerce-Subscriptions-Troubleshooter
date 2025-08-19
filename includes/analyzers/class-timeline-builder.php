@@ -24,23 +24,34 @@ class WCST_Timeline_Builder {
      * Safely format a date that might be a DateTime object or string (HPOS compatibility).
      *
      * @since 2.0.0
-     * @param mixed $date Date object or string.
-     * @return string Formatted date.
+     * @param mixed $date Date object, string, or timestamp.
+     * @return string Formatted date string for consistent comparison.
      */
     private function safe_format_date( $date ) {
         if ( empty( $date ) ) {
-            return 'N/A';
+            return '1970-01-01 00:00:00'; // Return sortable default
         }
         
+        // Handle DateTime/WC_DateTime objects
         if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
             return $date->format( 'Y-m-d H:i:s' );
         }
         
-        if ( is_string( $date ) ) {
-            return $date;
+        // Handle timestamp integers
+        if ( is_numeric( $date ) ) {
+            return gmdate( 'Y-m-d H:i:s', (int) $date );
         }
         
-        return 'N/A';
+        // Handle string dates - try to normalize format
+        if ( is_string( $date ) ) {
+            $timestamp = strtotime( $date );
+            if ( $timestamp !== false ) {
+                return gmdate( 'Y-m-d H:i:s', $timestamp );
+            }
+            return $date; // Return as-is if can't parse
+        }
+        
+        return '1970-01-01 00:00:00'; // Fallback for unknown types
     }
     
     /**
@@ -80,10 +91,29 @@ class WCST_Timeline_Builder {
         // Add server log events (if available).
         $events = array_merge( $events, $this->get_server_log_events( $subscription ) );
         
-        // Sort events chronologically.
+        // Sort events chronologically with comprehensive safety checks.
         usort( $events, function( $a, $b ) {
-            $timestamp_a = $this->safe_format_date( $a['timestamp'] );
-            $timestamp_b = $this->safe_format_date( $b['timestamp'] );
+            // Ensure both events have timestamp keys
+            $raw_a = isset( $a['timestamp'] ) ? $a['timestamp'] : null;
+            $raw_b = isset( $b['timestamp'] ) ? $b['timestamp'] : null;
+            
+            // Format both timestamps safely
+            $timestamp_a = $this->safe_format_date( $raw_a );
+            $timestamp_b = $this->safe_format_date( $raw_b );
+            
+            // Final safety check - ensure both are strings
+            if ( ! is_string( $timestamp_a ) || ! is_string( $timestamp_b ) ) {
+                error_log( 'WCST Timeline Debug - Non-string timestamp detected:' );
+                error_log( 'Raw A: ' . print_r( $raw_a, true ) );
+                error_log( 'Raw B: ' . print_r( $raw_b, true ) );
+                error_log( 'Formatted A: ' . print_r( $timestamp_a, true ) );
+                error_log( 'Formatted B: ' . print_r( $timestamp_b, true ) );
+                
+                // Force string conversion
+                $timestamp_a = (string) $timestamp_a;
+                $timestamp_b = (string) $timestamp_b;
+            }
+            
             return strcmp( $timestamp_a, $timestamp_b );
         } );
         
@@ -149,7 +179,7 @@ class WCST_Timeline_Builder {
         
         foreach ( $notes as $note ) {
             $events[] = array(
-                'timestamp'   => $note->date_created,
+                'timestamp'   => $this->safe_format_date( $note->date_created ),
                 'type'        => 'note',
                 'category'    => 'subscription',
                 'title'       => $this->extract_note_title( $note->content ),
@@ -291,7 +321,7 @@ class WCST_Timeline_Builder {
         
         foreach ( $notes as $note ) {
             $events[] = array(
-                'timestamp'   => $note->date_created,
+                'timestamp'   => $this->safe_format_date( $note->date_created ),
                 'type'        => 'order_note',
                 'category'    => 'order',
                 'title'       => sprintf(
@@ -347,7 +377,7 @@ class WCST_Timeline_Builder {
         
         foreach ( $actions as $action ) {
             $events[] = array(
-                'timestamp'   => $action->scheduled_date_gmt,
+                'timestamp'   => $this->safe_format_date( $action->scheduled_date_gmt ),
                 'type'        => 'scheduled_action',
                 'category'    => 'system',
                 'title'       => $this->format_action_title( $action->hook, $action->status ),
@@ -388,7 +418,7 @@ class WCST_Timeline_Builder {
             foreach ( $log_files as $log_entry ) {
                 if ( $this->log_entry_relates_to_subscription( $log_entry, $subscription ) ) {
                     $events[] = array(
-                        'timestamp'   => $log_entry['timestamp'],
+                        'timestamp'   => $this->safe_format_date( $log_entry['timestamp'] ),
                         'type'        => 'payment_log',
                         'category'    => 'payment',
                         'title'       => $log_entry['title'],
