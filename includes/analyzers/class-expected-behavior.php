@@ -21,6 +21,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCST_Expected_Behavior {
     
     /**
+     * Safely format a date that might be a DateTime object or string (HPOS compatibility).
+     *
+     * @since 2.0.0
+     * @param mixed $date Date object or string.
+     * @return string Formatted date or 'unknown'.
+     */
+    private function safe_format_date( $date ) {
+        if ( empty( $date ) ) {
+            return __( 'unknown', 'wc-subscriptions-troubleshooter' );
+        }
+        
+        if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
+            return $date->format( 'Y-m-d H:i:s' );
+        }
+        
+        if ( is_string( $date ) ) {
+            return $date;
+        }
+        
+        return __( 'unknown', 'wc-subscriptions-troubleshooter' );
+    }
+    
+    /**
      * Analyze expected subscription behavior.
      *
      * @since 2.0.0
@@ -166,7 +189,7 @@ class WCST_Expected_Behavior {
                 'next_action' => sprintf(
                     /* translators: %s: next payment date */
                     __( 'Automated renewal scheduled for %s', 'wc-subscriptions-troubleshooter' ),
-                    $next_payment ? $next_payment->format( 'Y-m-d H:i:s' ) : __( 'unknown', 'wc-subscriptions-troubleshooter' )
+                    $this->safe_format_date( $next_payment )
                 ),
                 'automated_actions' => true,
                 'next_payment_date' => $next_payment,
@@ -477,7 +500,7 @@ class WCST_Expected_Behavior {
             $events[] = sprintf(
                 /* translators: %s: next payment date */
                 __( 'Next renewal payment due: %s', 'wc-subscriptions-troubleshooter' ),
-                $next_payment->format( 'Y-m-d H:i:s' )
+                $this->safe_format_date( $next_payment )
             );
         }
         
@@ -485,7 +508,7 @@ class WCST_Expected_Behavior {
             $events[] = sprintf(
                 /* translators: %s: end date */
                 __( 'Subscription will expire on: %s', 'wc-subscriptions-troubleshooter' ),
-                $end_date->format( 'Y-m-d H:i:s' )
+                $this->safe_format_date( $end_date )
             );
         }
         
@@ -526,7 +549,7 @@ class WCST_Expected_Behavior {
                 sprintf(
                     /* translators: %s: next payment date */
                     __( 'Subscription will be cancelled after the next payment on: %s', 'wc-subscriptions-troubleshooter' ),
-                    $next_payment->format( 'Y-m-d H:i:s' )
+                    $this->safe_format_date( $next_payment )
                 ),
                 __( 'One final renewal payment will be processed.', 'wc-subscriptions-troubleshooter' ),
                 __( 'After final payment, status will change to cancelled.', 'wc-subscriptions-troubleshooter' ),
@@ -552,7 +575,10 @@ class WCST_Expected_Behavior {
         
         $time_diff = null;
         if ( $sub_date && $order_date ) {
-            $time_diff = $sub_date->getTimestamp() - $order_date->getTimestamp();
+            // Handle both DateTime objects and timestamp strings (HPOS compatibility)
+            $sub_timestamp = is_object( $sub_date ) ? $sub_date->getTimestamp() : strtotime( $sub_date );
+            $order_timestamp = is_object( $order_date ) ? $order_date->getTimestamp() : strtotime( $order_date );
+            $time_diff = $sub_timestamp - $order_timestamp;
         }
         
         return array(

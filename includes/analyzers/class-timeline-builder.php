@@ -21,6 +21,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCST_Timeline_Builder {
     
     /**
+     * Safely format a date that might be a DateTime object or string (HPOS compatibility).
+     *
+     * @since 2.0.0
+     * @param mixed $date Date object or string.
+     * @return string Formatted date.
+     */
+    private function safe_format_date( $date ) {
+        if ( empty( $date ) ) {
+            return 'N/A';
+        }
+        
+        if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
+            return $date->format( 'Y-m-d H:i:s' );
+        }
+        
+        if ( is_string( $date ) ) {
+            return $date;
+        }
+        
+        return 'N/A';
+    }
+    
+    /**
      * Build subscription timeline.
      *
      * @since 2.0.0
@@ -99,9 +122,9 @@ class WCST_Timeline_Builder {
         foreach ( $key_dates as $date_type => $description ) {
             $date = $subscription->get_date( $date_type );
             if ( $date ) {
-                $events[] = array(
-                    'timestamp'   => $date->format( 'Y-m-d H:i:s' ),
-                    'type'        => 'subscription_date',
+                            $events[] = array(
+                'timestamp'   => $this->safe_format_date( $date ),
+                'type'        => 'subscription_date',
                     'category'    => 'subscription',
                     'title'       => $description,
                     'description' => $description,
@@ -202,7 +225,7 @@ class WCST_Timeline_Builder {
         
         // Add order creation event.
         $events[] = array(
-            'timestamp'   => $order->get_date_created()->format( 'Y-m-d H:i:s' ),
+            'timestamp'   => $this->safe_format_date( $order->get_date_created() ),
             'type'        => 'order_created',
             'category'    => 'order',
             'title'       => sprintf(
@@ -232,7 +255,7 @@ class WCST_Timeline_Builder {
         $payment_date = $order->get_date_paid();
         if ( $payment_date ) {
             $events[] = array(
-                'timestamp'   => $payment_date->format( 'Y-m-d H:i:s' ),
+                'timestamp'   => $this->safe_format_date( $payment_date ),
                 'type'        => 'payment_completed',
                 'category'    => 'payment',
                 'title'       => sprintf(

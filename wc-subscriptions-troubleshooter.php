@@ -149,6 +149,17 @@ function wcst_init_plugin() {
 add_action( 'plugins_loaded', 'wcst_init_plugin', 20 );
 
 /**
+ * Declare HPOS compatibility.
+ *
+ * @since 2.0.0
+ */
+add_action( 'before_woocommerce_init', function() {
+    if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+    }
+} );
+
+/**
  * Plugin activation hook.
  *
  * @since 2.0.0
