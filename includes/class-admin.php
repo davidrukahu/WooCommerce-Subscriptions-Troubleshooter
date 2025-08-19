@@ -100,7 +100,7 @@ class WCST_Admin {
         ?>
         <div class="wrap wcst-admin-wrap">
             <h1 class="wcst-page-title">
-                <span class="wcst-doctor-icon">👨‍⚕️</span>
+                <span class="wcst-doctor-icon">🩺</span>
                 <?php esc_html_e( 'Doctor Subs', 'dr-subs' ); ?>
             </h1>
             
