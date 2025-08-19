@@ -172,7 +172,6 @@ class WCST_Plugin {
         $default_options = array(
             'enable_logging'     => true,
             'log_retention_days' => 30,
-            'export_format'      => 'html',
             'show_advanced_data' => false,
         );
         

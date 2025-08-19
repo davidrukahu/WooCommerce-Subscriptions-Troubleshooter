@@ -27,8 +27,7 @@ class WCST_Ajax_Handler {
         add_action( 'wp_ajax_wcst_analyze_subscription', array( $this, 'analyze_subscription' ) );
         add_action( 'wp_ajax_wcst_search_subscriptions', array( $this, 'search_subscriptions' ) );
         
-        // Export actions.
-        add_action( 'wp_ajax_wcst_export_report', array( $this, 'export_report' ) );
+        // Export removed.
     }
     
     /**
@@ -115,41 +114,7 @@ class WCST_Ajax_Handler {
         }
     }
     
-    /**
-     * Export troubleshooting report.
-     *
-     * @since 2.0.0
-     */
-    public function export_report() {
-        try {
-            // Security checks.
-            WCST_Security::verify_nonce( $_POST['nonce'] ?? '', 'wcst_nonce' );
-            WCST_Security::check_permissions( 'manage_woocommerce' );
-            
-            // Validate input.
-            $subscription_id = WCST_Security::validate_subscription_id( $_POST['subscription_id'] ?? '' );
-            $format          = sanitize_text_field( $_POST['format'] ?? 'html' );
-            
-            // Get analysis data.
-            $analysis_data = $this->get_cached_analysis( $subscription_id );
-            
-            if ( ! $analysis_data ) {
-                throw new Exception( __( 'No analysis data found. Please run the analysis first.', 'dr-subs' ) );
-            }
-            
-            // Initialize report exporter.
-            $exporter = new WCST_Report_Exporter();
-            
-            // Generate report.
-            $report_data = $exporter->export( $analysis_data, $format );
-            
-            wp_send_json_success( $report_data );
-            
-        } catch ( Exception $e ) {
-            WCST_Logger::log( 'error', 'Report export failed: ' . $e->getMessage() );
-            wp_send_json_error( $e->getMessage() );
-        }
-    }
+    
     
     /**
      * Create summary of analysis findings.

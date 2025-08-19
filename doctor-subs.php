@@ -151,7 +151,6 @@ function wcst_autoloader( $class ) {
         'subscription-data'   => 'includes/collectors/',
         'logger'              => 'includes/utilities/',
         'security'            => 'includes/utilities/',
-        'report-exporter'     => 'includes/utilities/',
     );
     
     $directory = isset( $class_directories[ $class_file ] ) ? $class_directories[ $class_file ] : 'includes/';

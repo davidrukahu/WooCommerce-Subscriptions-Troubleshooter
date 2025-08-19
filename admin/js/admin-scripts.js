@@ -26,8 +26,7 @@
             // Search result clicks
             $( document ).on( 'click', '.wcst-search-result-item', this.handleSearchResultClick.bind( this ) );
             
-            // Export events
-            $( document ).on( 'click', '.wcst-export-btn', this.handleExportClick.bind( this ) );
+            
         },
 
         initializeInterface: function() {
@@ -77,17 +76,7 @@
             this.analyzeSubscription( subscriptionId );
         },
 
-        handleExportClick: function( e ) {
-            e.preventDefault();
-            
-            if ( ! this.currentSubscriptionId ) {
-                this.showError( 'No subscription data to export.' );
-                return;
-            }
-            
-            const format = $( e.currentTarget ).data( 'format' );
-            this.exportReport( format );
-        },
+        
 
         analyzeSubscription: function( subscriptionId ) {
             this.showProgress();
@@ -364,42 +353,11 @@
                 html += '</ul>';
             }
             
-            // Export Options
-            html += '<h3>Export Report</h3>';
-            html += '<div class="wcst-filter-row">';
-            html += '<button class="button wcst-export-btn" data-format="html">Export as HTML</button>';
-            html += '<button class="button wcst-export-btn" data-format="csv">Export as CSV</button>';
-            html += '</div>';
             
             return html;
         },
 
-        exportReport: function( format ) {
-            $.ajax( {
-                url: wcst_ajax.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'wcst_export_report',
-                    subscription_id: this.currentSubscriptionId,
-                    format: format,
-                    nonce: wcst_ajax.nonce
-                },
-                success: ( response ) => {
-                    if ( response.success ) {
-                        // Handle download
-                        const link = document.createElement( 'a' );
-                        link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent( response.data );
-                        link.download = 'subscription-report-' + this.currentSubscriptionId + '.' + format;
-                        link.click();
-                    } else {
-                        this.showError( response.data || 'Export failed.' );
-                    }
-                },
-                error: () => {
-                    this.showError( 'Export failed.' );
-                }
-            } );
-        },
+        
 
         showProgress: function() {
             $( '#wcst-progress' ).show();

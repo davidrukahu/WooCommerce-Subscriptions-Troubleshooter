@@ -22,7 +22,6 @@ An intuitive WordPress plugin that implements the official WooCommerce Subscript
 2. Enter a subscription ID or customer email in the search box
 3. Click **"Start Troubleshooting"**
 4. Review the automated 3-step analysis
-5. Export the report for documentation or support
 
 ### Search Options
 - **By Subscription ID**: Enter the numeric subscription ID (e.g., 1234)
@@ -59,7 +58,6 @@ An intuitive WordPress plugin that implements the official WooCommerce Subscript
 - **Expected Behavior**: `WCST_Expected_Behavior` - Step 2 analysis  
 - **Timeline Builder**: `WCST_Timeline_Builder` - Step 3 analysis
 - **Data Collector**: `WCST_Subscription_Data` - Data collection utilities
-- **Report Exporter**: `WCST_Report_Exporter` - Export functionality
 
 ### Data Sources
 

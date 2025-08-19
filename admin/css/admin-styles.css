@@ -486,11 +486,7 @@
     border-radius: 3px;
 }
 
-/* Export Buttons */
-.wcst-export-btn {
-    margin-right: 10px;
-    margin-top: 10px;
-}
+/* Export removed */
 
 /* Responsive Design */
 @media (max-width: 768px) {
