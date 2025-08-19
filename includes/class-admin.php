@@ -35,8 +35,8 @@ class WCST_Admin {
     public function add_admin_menu() {
         add_submenu_page(
             'woocommerce',
-            __( 'Subscriptions Troubleshooter', 'dr-subs' ),
-            __( 'Subscriptions Troubleshooter', 'dr-subs' ),
+            __( 'Doctor Subs', 'dr-subs' ),
+            __( 'Doctor Subs', 'dr-subs' ),
             'manage_woocommerce',
             'dr-subs',
             array( $this, 'render_admin_page' )
@@ -99,10 +99,19 @@ class WCST_Admin {
     public function render_admin_page() {
         ?>
         <div class="wrap wcst-admin-wrap">
-            <h1><?php esc_html_e( 'WooCommerce Subscriptions Troubleshooter', 'dr-subs' ); ?></h1>
+            <h1 class="wcst-page-title">
+                <span class="wcst-doctor-icon">👨‍⚕️</span>
+                <?php esc_html_e( 'Doctor Subs - WooCommerce Subscriptions Troubleshooter', 'dr-subs' ); ?>
+            </h1>
             
             <div class="wcst-intro">
-                <p><?php esc_html_e( 'Follow the official WooCommerce Subscriptions troubleshooting framework to diagnose subscription issues systematically.', 'dr-subs' ); ?></p>
+                <p><?php 
+                    printf(
+                        /* translators: %s: link to troubleshooting framework documentation */
+                        esc_html__( 'Follows the official WooCommerce Subscriptions troubleshooting framework to diagnose subscription issues systematically: %s', 'dr-subs' ),
+                        '<a href="https://woocommerce.com/document/subscriptions/troubleshooting-framework/" target="_blank" rel="noopener">' . esc_html__( 'View Framework Documentation', 'dr-subs' ) . ' ↗</a>'
+                    );
+                ?></p>
             </div>
             
             <!-- Subscription Search -->
