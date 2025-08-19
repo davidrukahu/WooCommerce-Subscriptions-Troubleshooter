@@ -1,9 +1,9 @@
 <?php
 declare( strict_types=1 );
 /**
- * Plugin Name: Doctor Subs - Subscription Troubleshooter
+ * Plugin Name: Doctor Subs
  * Plugin URI: https://github.com/davidrukahu/dr-subs
- * Description: An intuitive subscription troubleshooting tool that implements the official WooCommerce Subscriptions troubleshooting framework with a simple 3-step diagnostic process.
+ * Description: An intuitive WooCommerce Subscriptions troubleshooting tool that implements a simple 3-step diagnostic process.
  * Version: 2.0.0
  * Author: DavidR
  * Author URI: https://github.com/davidrukahu/dr-subs
@@ -42,8 +42,28 @@ function wcst_check_dependencies() {
     $errors = array();
     
     // Check if WooCommerce is active.
-    if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
-        $errors[] = __( 'WooCommerce Subscriptions Troubleshooter requires WooCommerce to be installed and activated.', 'wc-subscriptions-troubleshooter' );
+    $woocommerce_active = false;
+    
+    // Check regular plugin activation.
+    if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
+        $woocommerce_active = true;
+    }
+    
+    // Check network activation for multisite.
+    if ( ! $woocommerce_active && is_multisite() ) {
+        $network_plugins = get_site_option( 'active_sitewide_plugins' );
+        if ( isset( $network_plugins['woocommerce/woocommerce.php'] ) ) {
+            $woocommerce_active = true;
+        }
+    }
+    
+    // Check if WooCommerce class exists.
+    if ( ! $woocommerce_active && class_exists( 'WooCommerce' ) ) {
+        $woocommerce_active = true;
+    }
+    
+    if ( ! $woocommerce_active ) {
+        $errors[] = __( 'Doctor Subs requires WooCommerce to be installed and activated.', 'dr-subs' );
     }
     
     // Check if WooCommerce Subscriptions is active using multiple methods.
@@ -52,6 +72,14 @@ function wcst_check_dependencies() {
     // Method 1: Check if the plugin file is active.
     if ( in_array( 'woocommerce-subscriptions/woocommerce-subscriptions.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
         $subscriptions_active = true;
+    }
+    
+    // Method 1b: Check network activation for multisite.
+    if ( ! $subscriptions_active && is_multisite() ) {
+        $network_plugins = get_site_option( 'active_sitewide_plugins' );
+        if ( isset( $network_plugins['woocommerce-subscriptions/woocommerce-subscriptions.php'] ) ) {
+            $subscriptions_active = true;
+        }
     }
     
     // Method 2: Check if the main plugin class exists.
@@ -70,7 +98,7 @@ function wcst_check_dependencies() {
     }
     
     if ( ! $subscriptions_active ) {
-        $errors[] = __( 'WooCommerce Subscriptions Troubleshooter requires WooCommerce Subscriptions to be installed and activated.', 'wc-subscriptions-troubleshooter' );
+        $errors[] = __( 'Doctor Subs requires WooCommerce Subscriptions to be installed and activated.', 'dr-subs' );
     }
     
     return $errors;

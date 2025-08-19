@@ -101,14 +101,14 @@ class WCST_Admin {
         <div class="wrap wcst-admin-wrap">
             <h1 class="wcst-page-title">
                 <span class="wcst-doctor-icon">👨‍⚕️</span>
-                <?php esc_html_e( 'Doctor Subs - WooCommerce Subscriptions Troubleshooter', 'dr-subs' ); ?>
+                <?php esc_html_e( 'Doctor Subs', 'dr-subs' ); ?>
             </h1>
             
             <div class="wcst-intro">
                 <p><?php 
                     printf(
                         /* translators: %s: link to troubleshooting framework documentation */
-                        esc_html__( 'Follows the official WooCommerce Subscriptions troubleshooting framework to diagnose subscription issues systematically: %s', 'dr-subs' ),
+                        esc_html__( 'An intuitive WooCommerce Subscriptions troubleshooting tool that implements a simple 3-step diagnostic process. %s', 'dr-subs' ),
                         '<a href="https://woocommerce.com/document/subscriptions/troubleshooting-framework/" target="_blank" rel="noopener">' . esc_html__( 'View Framework Documentation', 'dr-subs' ) . ' ↗</a>'
                     );
                 ?></p>
