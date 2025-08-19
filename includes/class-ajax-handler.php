@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * AJAX Request Handler
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -134,7 +134,7 @@ class WCST_Ajax_Handler {
             $analysis_data = $this->get_cached_analysis( $subscription_id );
             
             if ( ! $analysis_data ) {
-                throw new Exception( __( 'No analysis data found. Please run the analysis first.', 'wc-subscriptions-troubleshooter' ) );
+                throw new Exception( __( 'No analysis data found. Please run the analysis first.', 'dr-subs' ) );
             }
             
             // Initialize report exporter.
@@ -172,8 +172,8 @@ class WCST_Ajax_Handler {
             $issues[] = array(
                 'severity'    => 'critical',
                 'type'        => 'payment_method',
-                'title'       => __( 'Payment Method Issue', 'wc-subscriptions-troubleshooter' ),
-                'description' => __( 'The payment method appears to have issues that may affect renewals.', 'wc-subscriptions-troubleshooter' ),
+                'title'       => __( 'Payment Method Issue', 'dr-subs' ),
+                'description' => __( 'The payment method appears to have issues that may affect renewals.', 'dr-subs' ),
             );
             $status = 'issues_found';
         }
@@ -183,10 +183,10 @@ class WCST_Ajax_Handler {
             $issues[] = array(
                 'severity'    => 'warning',
                 'type'        => 'scheduled_actions',
-                'title'       => __( 'Failed Scheduled Actions', 'wc-subscriptions-troubleshooter' ),
+                'title'       => __( 'Failed Scheduled Actions', 'dr-subs' ),
                 'description' => sprintf(
                     /* translators: %d: number of failed actions */
-                    __( '%d scheduled actions have failed. This may affect automatic renewals.', 'wc-subscriptions-troubleshooter' ),
+                    __( '%d scheduled actions have failed. This may affect automatic renewals.', 'dr-subs' ),
                     count( $anatomy_data['scheduled_actions']['failed'] )
                 ),
             );
@@ -201,7 +201,7 @@ class WCST_Ajax_Handler {
                 $issues[] = array(
                     'severity'    => $discrepancy['severity'] ?? 'warning',
                     'type'        => 'timeline_discrepancy',
-                    'title'       => $discrepancy['title'] ?? __( 'Timeline Discrepancy', 'wc-subscriptions-troubleshooter' ),
+                    'title'       => $discrepancy['title'] ?? __( 'Timeline Discrepancy', 'dr-subs' ),
                     'description' => $discrepancy['description'] ?? '',
                 );
             }
@@ -210,10 +210,10 @@ class WCST_Ajax_Handler {
         
         // Generate next steps based on findings.
         if ( empty( $issues ) ) {
-            $next_steps[] = __( 'No issues detected. The subscription appears to be functioning normally.', 'wc-subscriptions-troubleshooter' );
+            $next_steps[] = __( 'No issues detected. The subscription appears to be functioning normally.', 'dr-subs' );
         } else {
-            $next_steps[] = __( 'Review the identified issues above and take appropriate action.', 'wc-subscriptions-troubleshooter' );
-            $next_steps[] = __( 'Consider contacting WooCommerce support if issues persist.', 'wc-subscriptions-troubleshooter' );
+            $next_steps[] = __( 'Review the identified issues above and take appropriate action.', 'dr-subs' );
+            $next_steps[] = __( 'Consider contacting WooCommerce support if issues persist.', 'dr-subs' );
         }
         
         return array(

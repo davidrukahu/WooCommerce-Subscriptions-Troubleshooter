@@ -1,13 +1,13 @@
 <?php
 declare( strict_types=1 );
 /**
- * Plugin Name: WooCommerce Subscriptions Troubleshooter
- * Plugin URI: https://github.com/davidrukahu/WooCommerce-Subscriptions-Troubleshooter
- * Description: An intuitive troubleshooting tool that implements the official WooCommerce Subscriptions troubleshooting framework with a simple 3-step diagnostic process.
+ * Plugin Name: Dr Subs - Subscription Troubleshooter
+ * Plugin URI: https://github.com/davidrukahu/dr-subs
+ * Description: An intuitive subscription troubleshooting tool that implements the official WooCommerce Subscriptions troubleshooting framework with a simple 3-step diagnostic process.
  * Version: 2.0.0
  * Author: DavidR
- * Author URI: https://github.com/davidrukahu/WooCommerce-Subscriptions-Troubleshooter
- * Text Domain: wc-subscriptions-troubleshooter
+ * Author URI: https://github.com/davidrukahu/dr-subs
+ * Text Domain: dr-subs
  * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.4
@@ -17,7 +17,7 @@ declare( strict_types=1 );
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 // Prevent direct access.

@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * Security Utility Class
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +27,7 @@ class WCST_Security {
      */
     public static function verify_nonce( $nonce, $action ) {
         if ( ! wp_verify_nonce( $nonce, $action ) ) {
-            throw new Exception( __( 'Security check failed. Please refresh the page and try again.', 'wc-subscriptions-troubleshooter' ) );
+            throw new Exception( __( 'Security check failed. Please refresh the page and try again.', 'dr-subs' ) );
         }
     }
     
@@ -40,7 +40,7 @@ class WCST_Security {
      */
     public static function check_permissions( $capability ) {
         if ( ! current_user_can( $capability ) ) {
-            throw new Exception( __( 'You do not have permission to perform this action.', 'wc-subscriptions-troubleshooter' ) );
+            throw new Exception( __( 'You do not have permission to perform this action.', 'dr-subs' ) );
         }
     }
     
@@ -56,7 +56,7 @@ class WCST_Security {
         $id = absint( $subscription_id );
         
         if ( 0 === $id ) {
-            throw new Exception( __( 'Invalid subscription ID provided.', 'wc-subscriptions-troubleshooter' ) );
+            throw new Exception( __( 'Invalid subscription ID provided.', 'dr-subs' ) );
         }
         
         return $id;
@@ -108,7 +108,7 @@ class WCST_Security {
                 throw new Exception(
                     sprintf(
                         /* translators: 1: action name, 2: time window in seconds */
-                        __( 'Rate limit exceeded for %1$s. Please wait %2$d seconds before trying again.', 'wc-subscriptions-troubleshooter' ),
+                        __( 'Rate limit exceeded for %1$s. Please wait %2$d seconds before trying again.', 'dr-subs' ),
                         $action,
                         $time_window
                     )

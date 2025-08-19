@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * Logger Utility Class
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -31,7 +31,7 @@ class WCST_Logger {
      * @since 2.0.0
      * @var string
      */
-    private static $source = 'wc-subscriptions-troubleshooter';
+    private static $source = 'dr-subs';
     
     /**
      * Get logger instance.

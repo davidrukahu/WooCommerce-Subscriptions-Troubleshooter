@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * Admin Interface Controller
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,10 +35,10 @@ class WCST_Admin {
     public function add_admin_menu() {
         add_submenu_page(
             'woocommerce',
-            __( 'Subscriptions Troubleshooter', 'wc-subscriptions-troubleshooter' ),
-            __( 'Subscriptions Troubleshooter', 'wc-subscriptions-troubleshooter' ),
+            __( 'Subscriptions Troubleshooter', 'dr-subs' ),
+            __( 'Subscriptions Troubleshooter', 'dr-subs' ),
             'manage_woocommerce',
-            'wc-subscriptions-troubleshooter',
+            'dr-subs',
             array( $this, 'render_admin_page' )
         );
     }
@@ -50,7 +50,7 @@ class WCST_Admin {
      * @param string $hook Current admin page hook.
      */
     public function enqueue_admin_scripts( $hook ) {
-        if ( 'woocommerce_page_wc-subscriptions-troubleshooter' !== $hook ) {
+        if ( 'woocommerce_page_dr-subs' !== $hook ) {
             return;
         }
         
@@ -77,15 +77,15 @@ class WCST_Admin {
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'wcst_nonce' ),
                 'strings'  => array(
-                    'error'                     => __( 'An error occurred. Please try again.', 'wc-subscriptions-troubleshooter' ),
-                    'searching'                 => __( 'Searching...', 'wc-subscriptions-troubleshooter' ),
-                    'analyzing'                 => __( 'Analyzing subscription...', 'wc-subscriptions-troubleshooter' ),
-                    'step1_complete'            => __( 'Step 1: Anatomy analysis complete', 'wc-subscriptions-troubleshooter' ),
-                    'step2_complete'            => __( 'Step 2: Expected behavior analysis complete', 'wc-subscriptions-troubleshooter' ),
-                    'step3_complete'            => __( 'Step 3: Timeline analysis complete', 'wc-subscriptions-troubleshooter' ),
-                    'analysis_complete'         => __( 'Analysis complete!', 'wc-subscriptions-troubleshooter' ),
-                    'no_subscription_found'     => __( 'No subscription found with that ID.', 'wc-subscriptions-troubleshooter' ),
-                    'invalid_subscription_id'   => __( 'Please enter a valid subscription ID.', 'wc-subscriptions-troubleshooter' ),
+                    'error'                     => __( 'An error occurred. Please try again.', 'dr-subs' ),
+                    'searching'                 => __( 'Searching...', 'dr-subs' ),
+                    'analyzing'                 => __( 'Analyzing subscription...', 'dr-subs' ),
+                    'step1_complete'            => __( 'Step 1: Anatomy analysis complete', 'dr-subs' ),
+                    'step2_complete'            => __( 'Step 2: Expected behavior analysis complete', 'dr-subs' ),
+                    'step3_complete'            => __( 'Step 3: Timeline analysis complete', 'dr-subs' ),
+                    'analysis_complete'         => __( 'Analysis complete!', 'dr-subs' ),
+                    'no_subscription_found'     => __( 'No subscription found with that ID.', 'dr-subs' ),
+                    'invalid_subscription_id'   => __( 'Please enter a valid subscription ID.', 'dr-subs' ),
                 ),
             )
         );
@@ -99,20 +99,20 @@ class WCST_Admin {
     public function render_admin_page() {
         ?>
         <div class="wrap wcst-admin-wrap">
-            <h1><?php esc_html_e( 'WooCommerce Subscriptions Troubleshooter', 'wc-subscriptions-troubleshooter' ); ?></h1>
+            <h1><?php esc_html_e( 'WooCommerce Subscriptions Troubleshooter', 'dr-subs' ); ?></h1>
             
             <div class="wcst-intro">
-                <p><?php esc_html_e( 'Follow the official WooCommerce Subscriptions troubleshooting framework to diagnose subscription issues systematically.', 'wc-subscriptions-troubleshooter' ); ?></p>
+                <p><?php esc_html_e( 'Follow the official WooCommerce Subscriptions troubleshooting framework to diagnose subscription issues systematically.', 'dr-subs' ); ?></p>
             </div>
             
             <!-- Subscription Search -->
             <div class="wcst-search-section">
-                <h2><?php esc_html_e( 'Find Subscription to Troubleshoot', 'wc-subscriptions-troubleshooter' ); ?></h2>
+                <h2><?php esc_html_e( 'Find Subscription to Troubleshoot', 'dr-subs' ); ?></h2>
                 <div class="wcst-search-container">
                     <input 
                         type="text" 
                         id="wcst-subscription-search" 
-                        placeholder="<?php esc_attr_e( 'Enter subscription ID or customer email...', 'wc-subscriptions-troubleshooter' ); ?>"
+                        placeholder="<?php esc_attr_e( 'Enter subscription ID or customer email...', 'dr-subs' ); ?>"
                         class="wcst-search-input"
                     />
                     <button 
@@ -120,7 +120,7 @@ class WCST_Admin {
                         id="wcst-analyze-btn" 
                         class="button button-primary wcst-analyze-btn"
                     >
-                        <?php esc_html_e( 'Start Troubleshooting', 'wc-subscriptions-troubleshooter' ); ?>
+                        <?php esc_html_e( 'Start Troubleshooting', 'dr-subs' ); ?>
                     </button>
                 </div>
                 <div id="wcst-search-results" class="wcst-search-results"></div>
@@ -128,22 +128,22 @@ class WCST_Admin {
             
             <!-- Progress Indicator -->
             <div id="wcst-progress" class="wcst-progress" style="display: none;">
-                <h3><?php esc_html_e( '3-Step Troubleshooting Process', 'wc-subscriptions-troubleshooter' ); ?></h3>
+                <h3><?php esc_html_e( '3-Step Troubleshooting Process', 'dr-subs' ); ?></h3>
                 <div class="wcst-steps">
                     <div class="wcst-step" data-step="1">
                         <div class="wcst-step-number">1</div>
-                        <div class="wcst-step-title"><?php esc_html_e( 'Understand the Anatomy', 'wc-subscriptions-troubleshooter' ); ?></div>
-                        <div class="wcst-step-description"><?php esc_html_e( 'Review subscription structure and configuration', 'wc-subscriptions-troubleshooter' ); ?></div>
+                        <div class="wcst-step-title"><?php esc_html_e( 'Understand the Anatomy', 'dr-subs' ); ?></div>
+                        <div class="wcst-step-description"><?php esc_html_e( 'Review subscription structure and configuration', 'dr-subs' ); ?></div>
                     </div>
                     <div class="wcst-step" data-step="2">
                         <div class="wcst-step-number">2</div>
-                        <div class="wcst-step-title"><?php esc_html_e( 'Determine Expected Behavior', 'wc-subscriptions-troubleshooter' ); ?></div>
-                        <div class="wcst-step-description"><?php esc_html_e( 'Establish what should happen based on setup', 'wc-subscriptions-troubleshooter' ); ?></div>
+                        <div class="wcst-step-title"><?php esc_html_e( 'Determine Expected Behavior', 'dr-subs' ); ?></div>
+                        <div class="wcst-step-description"><?php esc_html_e( 'Establish what should happen based on setup', 'dr-subs' ); ?></div>
                     </div>
                     <div class="wcst-step" data-step="3">
                         <div class="wcst-step-number">3</div>
-                        <div class="wcst-step-title"><?php esc_html_e( 'Create Timeline', 'wc-subscriptions-troubleshooter' ); ?></div>
-                        <div class="wcst-step-description"><?php esc_html_e( 'Document what actually occurred', 'wc-subscriptions-troubleshooter' ); ?></div>
+                        <div class="wcst-step-title"><?php esc_html_e( 'Create Timeline', 'dr-subs' ); ?></div>
+                        <div class="wcst-step-description"><?php esc_html_e( 'Document what actually occurred', 'dr-subs' ); ?></div>
                     </div>
                 </div>
             </div>
@@ -153,28 +153,28 @@ class WCST_Admin {
                 
                 <!-- Step 1: Subscription Anatomy -->
                 <div class="wcst-section wcst-anatomy-section">
-                    <h2><?php esc_html_e( 'Step 1: Subscription Anatomy', 'wc-subscriptions-troubleshooter' ); ?></h2>
-                    <p class="wcst-section-description"><?php esc_html_e( 'Understanding how your subscription is structured and configured.', 'wc-subscriptions-troubleshooter' ); ?></p>
+                    <h2><?php esc_html_e( 'Step 1: Subscription Anatomy', 'dr-subs' ); ?></h2>
+                    <p class="wcst-section-description"><?php esc_html_e( 'Understanding how your subscription is structured and configured.', 'dr-subs' ); ?></p>
                     <div id="wcst-anatomy-content" class="wcst-content"></div>
                 </div>
                 
                 <!-- Step 2: Expected Behavior -->
                 <div class="wcst-section wcst-expected-section">
-                    <h2><?php esc_html_e( 'Step 2: Expected Behavior', 'wc-subscriptions-troubleshooter' ); ?></h2>
-                    <p class="wcst-section-description"><?php esc_html_e( 'What should happen based on your subscription configuration.', 'wc-subscriptions-troubleshooter' ); ?></p>
+                    <h2><?php esc_html_e( 'Step 2: Expected Behavior', 'dr-subs' ); ?></h2>
+                    <p class="wcst-section-description"><?php esc_html_e( 'What should happen based on your subscription configuration.', 'dr-subs' ); ?></p>
                     <div id="wcst-expected-content" class="wcst-content"></div>
                 </div>
                 
                 <!-- Step 3: Timeline -->
                 <div class="wcst-section wcst-timeline-section">
-                    <h2><?php esc_html_e( 'Step 3: Timeline of Events', 'wc-subscriptions-troubleshooter' ); ?></h2>
-                    <p class="wcst-section-description"><?php esc_html_e( 'Chronological record of what actually happened with this subscription.', 'wc-subscriptions-troubleshooter' ); ?></p>
+                    <h2><?php esc_html_e( 'Step 3: Timeline of Events', 'dr-subs' ); ?></h2>
+                    <p class="wcst-section-description"><?php esc_html_e( 'Chronological record of what actually happened with this subscription.', 'dr-subs' ); ?></p>
                     <div id="wcst-timeline-content" class="wcst-content"></div>
                 </div>
                 
                 <!-- Summary & Actions -->
                 <div class="wcst-section wcst-summary-section">
-                    <h2><?php esc_html_e( 'Summary & Next Steps', 'wc-subscriptions-troubleshooter' ); ?></h2>
+                    <h2><?php esc_html_e( 'Summary & Next Steps', 'dr-subs' ); ?></h2>
                     <div id="wcst-summary-content" class="wcst-content"></div>
                 </div>
                 

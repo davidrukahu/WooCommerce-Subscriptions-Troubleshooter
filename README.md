@@ -1,4 +1,4 @@
-# WooCommerce Subscriptions Troubleshooter
+# Dr Subs - Subscription Troubleshooter
 
 An intuitive WordPress plugin that implements the official WooCommerce Subscriptions troubleshooting framework, providing a systematic 3-step approach to diagnosing subscription issues: https://woocommerce.com/document/subscriptions/troubleshooting-framework/
 
@@ -36,7 +36,7 @@ An intuitive WordPress plugin that implements the official WooCommerce Subscript
 
 ## Installation
 
-1. Upload the plugin files to `/wp-content/plugins/wc-subscriptions-troubleshooter/`
+1. Upload the plugin files to `/wp-content/plugins/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Navigate to **WooCommerce > Subscriptions Troubleshooter**
 
@@ -142,14 +142,3 @@ This plugin follows WordPress and WooCommerce coding standards. Contributions ar
 ## License
 
 GPL v2 or later. See LICENSE file for details.
-
-## Changelog
-
-### Version 2.0.0
-- Complete rewrite implementing the official troubleshooting framework (got rid of previous version - wasn't following WP standards)
-- New 3-step analysis process
-- Interactive admin interface
-- Multiple export formats
-- Comprehensive timeline building
-- Automatic issue detection
-- Improved security and performance

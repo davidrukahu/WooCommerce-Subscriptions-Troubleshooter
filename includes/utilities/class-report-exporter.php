@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * Report Exporter Utility Class
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -37,7 +37,7 @@ class WCST_Report_Exporter {
             default:
                 throw new Exception( sprintf(
                     /* translators: %s: unsupported format */
-                    __( 'Unsupported export format: %s', 'wc-subscriptions-troubleshooter' ),
+                    __( 'Unsupported export format: %s', 'dr-subs' ),
                     $format
                 ) );
         }

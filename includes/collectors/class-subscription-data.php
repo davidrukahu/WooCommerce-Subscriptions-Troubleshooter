@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * Subscription Data Collector
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,7 +62,7 @@ class WCST_Subscription_Data {
                     'id'       => $subscription->get_id(),
                     'title'    => sprintf(
                         /* translators: %d: subscription ID */
-                        __( 'Subscription #%d', 'wc-subscriptions-troubleshooter' ),
+                        __( 'Subscription #%d', 'dr-subs' ),
                         $subscription->get_id()
                     ),
                     'status'   => $subscription->get_status(),
@@ -129,7 +129,7 @@ class WCST_Subscription_Data {
                     'id'       => $subscription->get_id(),
                     'title'    => sprintf(
                         /* translators: %d: subscription ID */
-                        __( 'Subscription #%d', 'wc-subscriptions-troubleshooter' ),
+                        __( 'Subscription #%d', 'dr-subs' ),
                         $subscription->get_id()
                     ),
                     'status'   => $subscription->get_status(),

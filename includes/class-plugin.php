@@ -3,7 +3,7 @@ declare( strict_types=1 );
 /**
  * Main Plugin Class
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -110,7 +110,7 @@ class WCST_Plugin {
      */
     public function init() {
         // Load text domain for translations.
-        load_plugin_textdomain( 'wc-subscriptions-troubleshooter', false, dirname( WCST_PLUGIN_BASENAME ) . '/languages' );
+        load_plugin_textdomain( 'dr-subs', false, dirname( WCST_PLUGIN_BASENAME ) . '/languages' );
         
         // Fire action for extensions.
         do_action( 'wcst_init' );
@@ -134,8 +134,8 @@ class WCST_Plugin {
      * @return array Modified plugin action links.
      */
     public function add_settings_link( $links ) {
-        $settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-subscriptions-troubleshooter' ) ) . '">' . 
-                         esc_html__( 'Troubleshoot', 'wc-subscriptions-troubleshooter' ) . '</a>';
+        $settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=dr-subs' ) ) . '">' . 
+                         esc_html__( 'Troubleshoot', 'dr-subs' ) . '</a>';
         array_unshift( $links, $settings_link );
         return $links;
     }

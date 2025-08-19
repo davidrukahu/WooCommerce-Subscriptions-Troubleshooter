@@ -6,7 +6,7 @@ declare( strict_types=1 );
  * Implements Step 2 of the WooCommerce Subscriptions troubleshooting framework:
  * "Determine What Should Happen"
  *
- * @package WC_Subscriptions_Troubleshooter
+ * @package Dr_Subs
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,7 +29,7 @@ class WCST_Expected_Behavior {
      */
     private function safe_format_date( $date ) {
         if ( empty( $date ) ) {
-            return __( 'unknown', 'wc-subscriptions-troubleshooter' );
+            return __( 'unknown', 'dr-subs' );
         }
         
         if ( is_object( $date ) && method_exists( $date, 'format' ) ) {
@@ -40,7 +40,7 @@ class WCST_Expected_Behavior {
             return $date;
         }
         
-        return __( 'unknown', 'wc-subscriptions-troubleshooter' );
+        return __( 'unknown', 'dr-subs' );
     }
     
     /**
@@ -53,13 +53,13 @@ class WCST_Expected_Behavior {
      */
     public function analyze( $subscription_id ) {
         if ( ! function_exists( 'wcs_get_subscription' ) ) {
-            throw new Exception( __( 'WooCommerce Subscriptions is not active or properly loaded.', 'wc-subscriptions-troubleshooter' ) );
+            throw new Exception( __( 'WooCommerce Subscriptions is not active or properly loaded.', 'dr-subs' ) );
         }
         
         $subscription = wcs_get_subscription( $subscription_id );
         
         if ( ! $subscription ) {
-            throw new Exception( __( 'Subscription not found.', 'wc-subscriptions-troubleshooter' ) );
+            throw new Exception( __( 'Subscription not found.', 'dr-subs' ) );
         }
         
         return array(
@@ -121,7 +121,7 @@ class WCST_Expected_Behavior {
         
         if ( ! $payment_method || ! function_exists( 'WC' ) ) {
             return array(
-                'error' => __( 'Payment method not found or WooCommerce not available.', 'wc-subscriptions-troubleshooter' ),
+                'error' => __( 'Payment method not found or WooCommerce not available.', 'dr-subs' ),
             );
         }
         
@@ -130,7 +130,7 @@ class WCST_Expected_Behavior {
         
         if ( ! $gateway ) {
             return array(
-                'error' => __( 'Payment gateway not found.', 'wc-subscriptions-troubleshooter' ),
+                'error' => __( 'Payment gateway not found.', 'dr-subs' ),
                 'gateway_id' => $payment_method,
             );
         }
@@ -172,8 +172,8 @@ class WCST_Expected_Behavior {
         if ( $is_manual ) {
             return array(
                 'type' => 'manual',
-                'description' => __( 'Manual renewals require customer action to complete payments.', 'wc-subscriptions-troubleshooter' ),
-                'next_action' => __( 'Customer must manually renew the subscription.', 'wc-subscriptions-troubleshooter' ),
+                'description' => __( 'Manual renewals require customer action to complete payments.', 'dr-subs' ),
+                'next_action' => __( 'Customer must manually renew the subscription.', 'dr-subs' ),
                 'automated_actions' => false,
                 'next_payment_date' => $next_payment,
             );
@@ -185,10 +185,10 @@ class WCST_Expected_Behavior {
         if ( 'action_scheduler' === $billing_control ) {
             return array(
                 'type' => 'action_scheduler',
-                'description' => __( 'Renewals are handled by WordPress Action Scheduler.', 'wc-subscriptions-troubleshooter' ),
+                'description' => __( 'Renewals are handled by WordPress Action Scheduler.', 'dr-subs' ),
                 'next_action' => sprintf(
                     /* translators: %s: next payment date */
-                    __( 'Automated renewal scheduled for %s', 'wc-subscriptions-troubleshooter' ),
+                    __( 'Automated renewal scheduled for %s', 'dr-subs' ),
                     $this->safe_format_date( $next_payment )
                 ),
                 'automated_actions' => true,
@@ -201,8 +201,8 @@ class WCST_Expected_Behavior {
         
         return array(
             'type' => 'gateway_controlled',
-            'description' => __( 'Renewals are controlled by the payment gateway.', 'wc-subscriptions-troubleshooter' ),
-            'next_action' => __( 'Gateway will notify site when payment is processed.', 'wc-subscriptions-troubleshooter' ),
+            'description' => __( 'Renewals are controlled by the payment gateway.', 'dr-subs' ),
+            'next_action' => __( 'Gateway will notify site when payment is processed.', 'dr-subs' ),
             'automated_actions' => true,
             'next_payment_date' => $next_payment,
             'gateway_control' => true,
@@ -246,7 +246,7 @@ class WCST_Expected_Behavior {
                 break;
             case 'cancelled':
             case 'expired':
-                $expectations['next_events'] = array( __( 'No further automatic actions expected.', 'wc-subscriptions-troubleshooter' ) );
+                $expectations['next_events'] = array( __( 'No further automatic actions expected.', 'dr-subs' ) );
                 break;
         }
         
@@ -265,7 +265,7 @@ class WCST_Expected_Behavior {
         
         if ( ! $parent_order ) {
             return array(
-                'error' => __( 'No parent order found for this subscription.', 'wc-subscriptions-troubleshooter' ),
+                'error' => __( 'No parent order found for this subscription.', 'dr-subs' ),
             );
         }
         
@@ -292,7 +292,7 @@ class WCST_Expected_Behavior {
         if ( empty( $switch_data ) ) {
             return array(
                 'has_switches' => false,
-                'description' => __( 'No subscription switches detected.', 'wc-subscriptions-troubleshooter' ),
+                'description' => __( 'No subscription switches detected.', 'dr-subs' ),
             );
         }
         
@@ -300,11 +300,11 @@ class WCST_Expected_Behavior {
             'has_switches' => true,
             'switch_data' => $switch_data,
             'switch_logs_location' => 'WooCommerce > Status > Logs > wcs-switch-cart-items',
-            'description' => __( 'This subscription has been modified through subscription switching.', 'wc-subscriptions-troubleshooter' ),
+            'description' => __( 'This subscription has been modified through subscription switching.', 'dr-subs' ),
             'expectations' => array(
-                __( 'Switch logs should contain detailed information about the changes.', 'wc-subscriptions-troubleshooter' ),
-                __( 'Prorated amounts should be calculated based on timing and pricing.', 'wc-subscriptions-troubleshooter' ),
-                __( 'New billing schedule should reflect the switched product configuration.', 'wc-subscriptions-troubleshooter' ),
+                __( 'Switch logs should contain detailed information about the changes.', 'dr-subs' ),
+                __( 'Prorated amounts should be calculated based on timing and pricing.', 'dr-subs' ),
+                __( 'New billing schedule should reflect the switched product configuration.', 'dr-subs' ),
             ),
         );
     }
@@ -403,17 +403,17 @@ class WCST_Expected_Behavior {
     private function describe_action_scheduler_renewal_process() {
         return array(
             'steps' => array(
-                __( 'WordPress cron triggers Action Scheduler', 'wc-subscriptions-troubleshooter' ),
-                __( 'Action Scheduler executes scheduled renewal action', 'wc-subscriptions-troubleshooter' ),
-                __( 'New renewal order is created', 'wc-subscriptions-troubleshooter' ),
-                __( 'Payment is processed via the payment gateway', 'wc-subscriptions-troubleshooter' ),
-                __( 'Subscription dates are updated', 'wc-subscriptions-troubleshooter' ),
-                __( 'Next renewal action is scheduled', 'wc-subscriptions-troubleshooter' ),
+                __( 'WordPress cron triggers Action Scheduler', 'dr-subs' ),
+                __( 'Action Scheduler executes scheduled renewal action', 'dr-subs' ),
+                __( 'New renewal order is created', 'dr-subs' ),
+                __( 'Payment is processed via the payment gateway', 'dr-subs' ),
+                __( 'Subscription dates are updated', 'dr-subs' ),
+                __( 'Next renewal action is scheduled', 'dr-subs' ),
             ),
             'dependencies' => array(
-                __( 'WordPress cron must be functioning', 'wc-subscriptions-troubleshooter' ),
-                __( 'Action Scheduler must be operational', 'wc-subscriptions-troubleshooter' ),
-                __( 'Payment gateway must be available', 'wc-subscriptions-troubleshooter' ),
+                __( 'WordPress cron must be functioning', 'dr-subs' ),
+                __( 'Action Scheduler must be operational', 'dr-subs' ),
+                __( 'Payment gateway must be available', 'dr-subs' ),
             ),
         );
     }
@@ -428,17 +428,17 @@ class WCST_Expected_Behavior {
     private function describe_gateway_controlled_renewal_process( $payment_method ) {
         return array(
             'steps' => array(
-                __( 'Payment gateway processes payment on their schedule', 'wc-subscriptions-troubleshooter' ),
-                __( 'Gateway sends webhook notification to your site', 'wc-subscriptions-troubleshooter' ),
-                __( 'Site receives and processes webhook', 'wc-subscriptions-troubleshooter' ),
-                __( 'New renewal order is created', 'wc-subscriptions-troubleshooter' ),
-                __( 'Subscription is updated with new payment information', 'wc-subscriptions-troubleshooter' ),
+                __( 'Payment gateway processes payment on their schedule', 'dr-subs' ),
+                __( 'Gateway sends webhook notification to your site', 'dr-subs' ),
+                __( 'Site receives and processes webhook', 'dr-subs' ),
+                __( 'New renewal order is created', 'dr-subs' ),
+                __( 'Subscription is updated with new payment information', 'dr-subs' ),
             ),
             'dependencies' => array(
-                __( 'Gateway subscription must be active', 'wc-subscriptions-troubleshooter' ),
-                __( 'Webhook endpoint must be accessible', 'wc-subscriptions-troubleshooter' ),
-                __( 'Webhook authentication must be valid', 'wc-subscriptions-troubleshooter' ),
-                __( 'Site must be able to receive external requests', 'wc-subscriptions-troubleshooter' ),
+                __( 'Gateway subscription must be active', 'dr-subs' ),
+                __( 'Webhook endpoint must be accessible', 'dr-subs' ),
+                __( 'Webhook authentication must be valid', 'dr-subs' ),
+                __( 'Site must be able to receive external requests', 'dr-subs' ),
             ),
             'payment_method' => $payment_method,
         );
@@ -453,15 +453,15 @@ class WCST_Expected_Behavior {
      */
     private function get_status_description( $status ) {
         $descriptions = array(
-            'active'         => __( 'Subscription is active and should process renewals automatically.', 'wc-subscriptions-troubleshooter' ),
-            'on-hold'        => __( 'Subscription is suspended and will not process renewals until reactivated.', 'wc-subscriptions-troubleshooter' ),
-            'cancelled'      => __( 'Subscription has been cancelled and will not renew.', 'wc-subscriptions-troubleshooter' ),
-            'expired'        => __( 'Subscription has reached its natural end date.', 'wc-subscriptions-troubleshooter' ),
-            'pending-cancel' => __( 'Subscription is set to cancel at the end of the current billing period.', 'wc-subscriptions-troubleshooter' ),
-            'pending'        => __( 'Subscription is awaiting initial payment or activation.', 'wc-subscriptions-troubleshooter' ),
+            'active'         => __( 'Subscription is active and should process renewals automatically.', 'dr-subs' ),
+            'on-hold'        => __( 'Subscription is suspended and will not process renewals until reactivated.', 'dr-subs' ),
+            'cancelled'      => __( 'Subscription has been cancelled and will not renew.', 'dr-subs' ),
+            'expired'        => __( 'Subscription has reached its natural end date.', 'dr-subs' ),
+            'pending-cancel' => __( 'Subscription is set to cancel at the end of the current billing period.', 'dr-subs' ),
+            'pending'        => __( 'Subscription is awaiting initial payment or activation.', 'dr-subs' ),
         );
         
-        return isset( $descriptions[ $status ] ) ? $descriptions[ $status ] : __( 'Unknown status.', 'wc-subscriptions-troubleshooter' );
+        return isset( $descriptions[ $status ] ) ? $descriptions[ $status ] : __( 'Unknown status.', 'dr-subs' );
     }
     
     /**
@@ -499,7 +499,7 @@ class WCST_Expected_Behavior {
         if ( $next_payment ) {
             $events[] = sprintf(
                 /* translators: %s: next payment date */
-                __( 'Next renewal payment due: %s', 'wc-subscriptions-troubleshooter' ),
+                __( 'Next renewal payment due: %s', 'dr-subs' ),
                 $this->safe_format_date( $next_payment )
             );
         }
@@ -507,13 +507,13 @@ class WCST_Expected_Behavior {
         if ( $end_date ) {
             $events[] = sprintf(
                 /* translators: %s: end date */
-                __( 'Subscription will expire on: %s', 'wc-subscriptions-troubleshooter' ),
+                __( 'Subscription will expire on: %s', 'dr-subs' ),
                 $this->safe_format_date( $end_date )
             );
         }
         
         if ( empty( $events ) ) {
-            $events[] = __( 'Subscription will continue indefinitely until cancelled.', 'wc-subscriptions-troubleshooter' );
+            $events[] = __( 'Subscription will continue indefinitely until cancelled.', 'dr-subs' );
         }
         
         return $events;
@@ -528,9 +528,9 @@ class WCST_Expected_Behavior {
      */
     private function get_on_hold_subscription_expectations( $subscription ) {
         return array(
-            __( 'No automatic renewals will occur while subscription is on hold.', 'wc-subscriptions-troubleshooter' ),
-            __( 'Subscription must be reactivated to resume billing.', 'wc-subscriptions-troubleshooter' ),
-            __( 'Customer access to subscription content may be restricted.', 'wc-subscriptions-troubleshooter' ),
+            __( 'No automatic renewals will occur while subscription is on hold.', 'dr-subs' ),
+            __( 'Subscription must be reactivated to resume billing.', 'dr-subs' ),
+            __( 'Customer access to subscription content may be restricted.', 'dr-subs' ),
         );
     }
     
@@ -548,16 +548,16 @@ class WCST_Expected_Behavior {
             return array(
                 sprintf(
                     /* translators: %s: next payment date */
-                    __( 'Subscription will be cancelled after the next payment on: %s', 'wc-subscriptions-troubleshooter' ),
+                    __( 'Subscription will be cancelled after the next payment on: %s', 'dr-subs' ),
                     $this->safe_format_date( $next_payment )
                 ),
-                __( 'One final renewal payment will be processed.', 'wc-subscriptions-troubleshooter' ),
-                __( 'After final payment, status will change to cancelled.', 'wc-subscriptions-troubleshooter' ),
+                __( 'One final renewal payment will be processed.', 'dr-subs' ),
+                __( 'After final payment, status will change to cancelled.', 'dr-subs' ),
             );
         }
         
         return array(
-            __( 'Subscription will be cancelled immediately as no next payment is scheduled.', 'wc-subscriptions-troubleshooter' ),
+            __( 'Subscription will be cancelled immediately as no next payment is scheduled.', 'dr-subs' ),
         );
     }
     
@@ -585,10 +585,10 @@ class WCST_Expected_Behavior {
             'subscription_created_after_order' => $time_diff > 0,
             'time_difference_seconds' => $time_diff,
             'expected_process' => array(
-                __( 'Customer completes checkout with subscription product', 'wc-subscriptions-troubleshooter' ),
-                __( 'Parent order is created first', 'wc-subscriptions-troubleshooter' ),
-                __( 'Subscription is created as a copy of the parent order', 'wc-subscriptions-troubleshooter' ),
-                __( 'Future renewals are created as copies of the subscription', 'wc-subscriptions-troubleshooter' ),
+                __( 'Customer completes checkout with subscription product', 'dr-subs' ),
+                __( 'Parent order is created first', 'dr-subs' ),
+                __( 'Subscription is created as a copy of the parent order', 'dr-subs' ),
+                __( 'Future renewals are created as copies of the subscription', 'dr-subs' ),
             ),
         );
     }
@@ -607,29 +607,29 @@ class WCST_Expected_Behavior {
         
         // Compare basic data.
         if ( $subscription->get_currency() === $parent_order->get_currency() ) {
-            $matches[] = __( 'Currency matches', 'wc-subscriptions-troubleshooter' );
+            $matches[] = __( 'Currency matches', 'dr-subs' );
         } else {
-            $mismatches[] = __( 'Currency does not match parent order', 'wc-subscriptions-troubleshooter' );
+            $mismatches[] = __( 'Currency does not match parent order', 'dr-subs' );
         }
         
         if ( $subscription->get_customer_id() === $parent_order->get_customer_id() ) {
-            $matches[] = __( 'Customer ID matches', 'wc-subscriptions-troubleshooter' );
+            $matches[] = __( 'Customer ID matches', 'dr-subs' );
         } else {
-            $mismatches[] = __( 'Customer ID does not match parent order', 'wc-subscriptions-troubleshooter' );
+            $mismatches[] = __( 'Customer ID does not match parent order', 'dr-subs' );
         }
         
         // Compare payment method.
         if ( $subscription->get_payment_method() === $parent_order->get_payment_method() ) {
-            $matches[] = __( 'Payment method matches', 'wc-subscriptions-troubleshooter' );
+            $matches[] = __( 'Payment method matches', 'dr-subs' );
         } else {
-            $mismatches[] = __( 'Payment method does not match parent order', 'wc-subscriptions-troubleshooter' );
+            $mismatches[] = __( 'Payment method does not match parent order', 'dr-subs' );
         }
         
         return array(
             'matches' => $matches,
             'mismatches' => $mismatches,
             'overall_match' => empty( $mismatches ),
-            'note' => __( 'Some differences may be expected due to subscription switching, admin edits, or customizations.', 'wc-subscriptions-troubleshooter' ),
+            'note' => __( 'Some differences may be expected due to subscription switching, admin edits, or customizations.', 'dr-subs' ),
         );
     }
 }
